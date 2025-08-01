@@ -1,0 +1,243 @@
+############################
+# Init
+############################
+
+autoload -Uz bashcompinit
+autoload -Uz compinit
+autoload -Uz edit-command-line
+
+mkdir -p "$HOME/.cache/zsh"
+compinit -d "$HOME/.cache/zsh/.zcompdump"
+bashcompinit
+
+############################
+# Exports
+############################
+
+export PATH=$HOME/bin:$HOME/.local/bin:/usr/local/bin:$PATH
+export EDITOR=nvim # Set default editor to Neovim.
+export BAT_THEME="Monokai Extended Origin"
+export BAT_STYLE="plain,header-filename,header-filesize,grid,snip"
+export DOCKER_HOST=unix:///run/user/1000/podman/podman.sock # Use Podman socket for Docker
+export TIME_STYLE='+%Y-%m-%d %l:%M%P' # Format for ls [YYYY-MM-DD 12-hr]
+export LS_COLORS="$LS_COLORS:ow=30;44:" # fix ls color for folders with 777 permissions
+# '-R' sends control characters to render colors, bold, etc..
+# '-X' don't clear the screen.
+# '-i' Causes searches to ignore case.
+# '--tabs' Sets number of tab stops and the multiplier.
+# '--shift' Number of positions to scroll horizontally when arrow keys are used.
+export LESS='-RXi --mouse --quit-if-one-screen --tabs=4 --shift=4'
+export LESS_TERMCAP_mb=$'\E[1;31m'     # begin blink
+export LESS_TERMCAP_md=$'\E[1;36m'     # begin bold
+export LESS_TERMCAP_me=$'\E[0m'        # reset bold/blink
+export LESS_TERMCAP_so=$'\E[01;33m'    # begin reverse video
+export LESS_TERMCAP_se=$'\E[0m'        # reset reverse video
+export LESS_TERMCAP_us=$'\E[1;32m'     # begin underline
+export LESS_TERMCAP_ue=$'\E[0m'        # reset underline
+export MANWIDTH=120
+
+############################
+# Keybindings
+############################
+
+zle -N edit-command-line
+bindkey "^X^E" edit-command-line # Edit current command line in $EDITOR
+bindkey -e # Emacs key bindings.
+bindkey ' ' magic-space # history expansion [Space]
+bindkey '^ ' autosuggest-accept # Auto accept suggestion
+bindkey '^[[H' beginning-of-line # Home
+bindkey '^[[F' end-of-line # End
+bindkey '^[[A' up-line-or-search # Typing + [Up Arrow] Fuzzy search forward
+bindkey '^[[B' down-line-or-search # Typing + [Down Arrow] Fuzzy search backward
+bindkey '^[[1;5C' forward-word # ctrl + ->
+bindkey '^[[1;5D' backward-word # ctrl + <-
+bindkey '^[[Z' reverse-menu-complete # go backwards in completion menu [Shift + Tab]
+bindkey '^?' backward-delete-char # Delete backwards [Backspace]
+bindkey '^[[3~' delete-char # Delete forwards [Delete]
+bindkey '^[[5~' up-line-or-history # [PageUp] a line of history
+bindkey '^[[6~' down-line-or-history # [PageDown] a line of history
+
+############################
+# ZSH Options
+############################
+
+HISTFILE_DIR="$HOME/.local/share/zsh"
+mkdir -p $HISTFILE_DIR
+
+HISTFILE="$HISTFILE_DIR/.zsh_history"
+HISTSIZE=5000 # Number of commands to save to memory for current session.
+SAVEHIST=5000 # Number of commands saved to history file.
+
+setopt SHARE_HISTORY # Share history across terminal sessions.
+setopt APPEND_HISTORY # Append to history.
+setopt HIST_EXPIRE_DUPS_FIRST # Expire duplicate commands first.
+setopt HIST_IGNORE_DUPS # Do not store duplications.
+setopt HIST_FIND_NO_DUPS # Ignore duplicates when searching.
+setopt HIST_REDUCE_BLANKS # Remove blank lines from history.
+setopt HIST_VERIFY # When using [!!] do not auto-hit enter.
+setopt HIST_IGNORE_SPACE # Don't add commands that start with a space.
+setopt EXTENDED_HISTORY # Save timestamps and duration in history.
+setopt RM_STAR_WAIT # Force prompts for confirmations after `rm *` etc.
+setopt AUTO_LIST # Automatically list choices on ambiguous completion.
+setopt AUTO_MENU # Automatically use menu completion.
+setopt ALWAYS_TO_END # Move cursor to end if word had one match.
+setopt NOTIFY # Report status of background jobs immediately.
+setopt NO_NOMATCH # Hide error message if there's no pattern match.
+setopt NUMERIC_GLOB_SORT # Sort filenames numerically when it makes sense.
+setopt PROMPT_SUBST # Enable command substitution in prompt.
+setopt CORRECT_ALL # Try to correct the spelling of all arguments in a line.
+
+WORDCHARS=${WORDCHARS//\/} # Define which characters are part of a word.
+
+# Autosuggest Options
+ZSH_AUTOSUGGEST_STRATEGY=(completion history)
+
+# Syntax Highlighting Options
+ZSH_HIGHLIGHT_HIGHLIGHTERS=(main brackets cursor)
+ZSH_AUTOSUGGEST_BUFFER_MAX_SIZE=20
+
+zstyle ':completion:*' list-suffixes
+zstyle ':completion:*' expand prefix suffix
+
+zstyle ':completion:*' use-cache on
+zstyle ':completion:*' cache-path "$HOME/.cache/zsh/.zcompcache"
+
+zstyle ':completion:*:*:*:*:*' menu select
+zstyle ':completion:*' auto-description 'specify: %d'
+zstyle ':completion:*' completer _expand _complete
+zstyle ':completion:*' format 'Completing %d'
+zstyle ':completion:*' group-name ''
+zstyle ':completion:*' list-colors ''
+zstyle ':completion:*' list-prompt %SAt %p: Hit TAB for more, or the character to insert%s
+zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}'
+zstyle ':completion:*' rehash true
+zstyle ':completion:*' select-prompt %SScrolling active: current selection at %p%s
+zstyle ':completion:*' use-compctl false
+zstyle ':completion:*' verbose true
+zstyle ':completion:*:kill:*' command 'ps -u $USER -o pid,%cpu,tty,cputime,cmd'
+zstyle ':completion:*' list-colors "${(s.:.)LS_COLORS}"
+zstyle ':completion:*:*:kill:*:processes' list-colors '=(#b) #([0-9]#)*=0=01;31'
+
+zstyle ':completion:*:git-checkout:*' sort false
+# set descriptions format to enable group support
+# NOTE: don't use escape sequences here, fzf-tab will ignore them
+zstyle ':completion:*:descriptions' format '[%d]'
+# set list-colors to enable filename colorizing
+zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
+# force zsh not to show completion menu, which allows fzf-tab to capture the unambiguous prefix
+zstyle ':completion:*' menu no
+# preview directory's content with eza when completing cd
+zstyle ':fzf-tab:complete:cd:*' fzf-preview 'eza -1 --color=always $realpath'
+# switch group using `<` and `>`
+zstyle ':fzf-tab:*' switch-group '<' '>'
+
+############################
+# Functions
+############################
+
+# If this is an xterm set the title to user@host:dir
+case "$TERM" in
+xterm*|rxvt*|Eterm|aterm|kterm|gnome*|alacritty)
+    TERM_TITLE=$'\e]0;${debian_chroot:+($debian_chroot)}${VIRTUAL_ENV:+($(basename $VIRTUAL_ENV))}%n@%m: %~\a'
+    ;;
+*)
+    ;;
+esac
+
+precmd () {
+    # Print the previously configured title
+    print -Pnr -- "$TERM_TITLE"
+
+    # Print a new line before the prompt, but only if it is not the first line
+    if [ "$NEWLINE_BEFORE_PROMPT" = yes ]; then
+        if [ -z "$_NEW_LINE_BEFORE_PROMPT" ]; then
+            _NEW_LINE_BEFORE_PROMPT=1
+        else
+            print ""
+        fi
+    fi
+}
+
+# Go directly to the projects directory, with autocompletion
+projects() {
+  cd "$HOME/Projects/$1"
+}
+
+_projects() {
+  _arguments '*::project:->project'
+
+  case $state in
+    project)
+      local expl
+      local -a dirs
+      dirs=(${(f)"$(find $HOME/Projects -type d -maxdepth 1 -mindepth 1 -exec basename {} \; 2>/dev/null)"})
+      _describe 'project' dirs
+      ;;
+  esac
+}
+
+compdef _projects projects
+
+# Lazy Load NVM
+lazy-nvm() {
+  unset -f nvm node npm npx
+  export NVM_DIR="$HOME/.nvm"
+  [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+}
+
+nvm() {
+  lazy-nvm
+  nvm $@
+}
+
+node() {
+  lazy-nvm
+  node $@
+}
+
+npm() {
+  lazy-nvm
+  npm $@
+}
+
+npx() {
+  lazy-nvm
+  npx $@
+}
+
+############################
+# Aliases
+############################
+
+# Editor
+alias nano=nvim # Use Neovim instead of nano.
+alias vim=nvim # Use Neovim instead of vim.
+alias code="codium"
+
+# Utilities
+alias bat="bat --tabs=4 --terminal-width=120"
+alias cat="bat"
+alias grep="grep --color=auto"
+alias l="eza -agh --icons=always --hyperlink --width=120 --group-directories-first"
+alias ll="eza -lagh --icons=always --hyperlink --width=120 --group-directories-first --smart-group --git"
+alias lll="ll --total-size"
+alias ls="ll"
+alias lst="lll"
+alias rm="rm -ri"
+alias c="clear"
+alias e="exit"
+
+############################
+# Init
+############################
+
+# Sources
+source /usr/share/zsh-fzf-tab/fzf-tab.plugin.zsh # FZF-Tab
+source /usr/share/zsh-autosuggestions/zsh-autosuggestions.zsh # Suggestions
+source /usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh # Syntax Highlighting
+
+# fzf
+eval "$(fzf --zsh)"
+
+# Starship
+eval "$(starship init zsh)"
