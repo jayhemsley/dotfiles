@@ -228,6 +228,7 @@ alias lst="lll"
 alias rm="rm -ri"
 alias c="clear"
 alias e="exit"
+alias sudo=/usr/bin/systemd-run --uid=0 --gid=0 --same-dir -E TERM=$TERM -E PATH=$PATH --pty --quiet --pipe --collect $@
 
 ############################
 # Init
