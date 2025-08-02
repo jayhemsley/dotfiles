@@ -6,6 +6,8 @@ autoload -Uz bashcompinit
 autoload -Uz compinit
 autoload -Uz edit-command-line
 
+export FPATH="/usr/share/zsh-eza-completions/zsh:$FPATH"
+
 mkdir -p "$HOME/.cache/zsh"
 compinit -d "$HOME/.cache/zsh/.zcompdump"
 bashcompinit
