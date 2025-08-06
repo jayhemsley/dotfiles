@@ -137,6 +137,9 @@ zstyle ':fzf-tab:*' switch-group '<' '>'
 # Functions
 ############################
 
+# Prompt engineering starship
+PROMPT_NEEDS_NEWLINE=false
+
 # If this is an xterm set the title to user@host:dir
 case "$TERM" in
 xterm*|rxvt*|Eterm|aterm|kterm|gnome*|alacritty)
@@ -146,18 +149,20 @@ xterm*|rxvt*|Eterm|aterm|kterm|gnome*|alacritty)
     ;;
 esac
 
-precmd () {
+precmd() {
     # Print the previously configured title
     print -Pnr -- "$TERM_TITLE"
 
-    # Print a new line before the prompt, but only if it is not the first line
-    if [ "$NEWLINE_BEFORE_PROMPT" = yes ]; then
-        if [ -z "$_NEW_LINE_BEFORE_PROMPT" ]; then
-            _NEW_LINE_BEFORE_PROMPT=1
-        else
-            print ""
-        fi
+    if [[ "$PROMPT_NEEDS_NEWLINE" == true ]]; then
+        echo
     fi
+    
+    PROMPT_NEEDS_NEWLINE=true
+}
+
+clear() {
+    PROMPT_NEEDS_NEWLINE=false
+    command clear
 }
 
 # Go directly to the projects directory, with autocompletion
@@ -229,6 +234,7 @@ alias rm="rm -ri"
 alias c="clear"
 alias e="exit"
 alias sudo="/usr/bin/systemd-run --uid=0 --gid=0 --same-dir -E TERM=$TERM -E PATH=$PATH --pty --quiet --pipe --collect $@"
+alias code="flatpak run com.vscodium.codium"
 
 ############################
 # Init
