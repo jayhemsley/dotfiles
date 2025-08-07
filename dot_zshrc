@@ -18,7 +18,7 @@ bashcompinit
 
 export PATH=$HOME/bin:$HOME/.local/bin:/usr/local/bin:$PATH
 export EDITOR=nvim # Set default editor to Neovim.
-export BAT_THEME="Monokai Extended Origin"
+export BAT_THEME="OneHalfDark"
 export BAT_STYLE="plain,header-filename,header-filesize,grid,snip"
 export DOCKER_HOST=unix:///run/user/1000/podman/podman.sock # Use Podman socket for Docker
 export TIME_STYLE='+%Y-%m-%d %l:%M%P' # Format for ls [YYYY-MM-DD 12-hr]
@@ -219,7 +219,8 @@ npx() {
 # Editor
 alias nano=nvim # Use Neovim instead of nano.
 alias vim=nvim # Use Neovim instead of vim.
-alias code="codium"
+alias code="flatpak run com.vscodium.codium"
+alias codium="code"
 
 # Utilities
 alias bat="bat --tabs=4 --terminal-width=120"
@@ -231,10 +232,10 @@ alias lll="ll --total-size"
 alias ls="ll"
 alias lst="lll"
 alias rm="rm -ri"
+alias rmf="rm -rif"
 alias c="clear"
 alias e="exit"
 alias sudo="/usr/bin/systemd-run --uid=0 --gid=0 --same-dir -E TERM=$TERM -E PATH=$PATH --pty --quiet --pipe --collect $@"
-alias code="flatpak run com.vscodium.codium"
 
 ############################
 # Init
