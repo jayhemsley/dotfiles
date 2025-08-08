@@ -1,59 +1,74 @@
 ############################
-# Init
+# Autoload
 ############################
 
-autoload -Uz bashcompinit
-autoload -Uz compinit
-autoload -Uz edit-command-line
-autoload -Uz up-line-or-beginning-search down-line-or-beginning-search
+# Completions
+autoload -Uz bashcompinit compinit
 
-export FPATH="/usr/share/zsh-eza-completions/zsh:$FPATH"
+# Keybindings
+autoload -Uz edit-command-line up-line-or-beginning-search down-line-or-beginning-search
 
+# Set fpath
+local -a current_fpath=("${fpath[@]}") # Get current.
+
+fpath=(
+  /usr/share/zsh-eza-completions/zsh
+)
+
+if [[ -d "/home/linuxbrew/.linuxbrew/share/zsh/site-functions" ]]; then
+  fpath+=("/home/linuxbrew/.linuxbrew/share/zsh/site-functions")
+fi
+
+fpath+=("${current_fpath[@]}") # Append new entries to current.
+
+# Enable bash completions
 bashcompinit
 
+# Create cached zsh completions
 _comp_path="$HOME/.cache/zsh/.zcompdump"
 
-# #q expands globs in conditional expressions
 if [[ $_comp_path(#qNmh-20) ]]; then
-  # -C (skip function check) implies -i (skip security check).
-  compinit -C -d "$_comp_path"
+  compinit -C -d "$_comp_path" # -C (skip function and security check)
 else
   mkdir -p "$_comp_path:h"
-  compinit -i -d "$_comp_path"
-  # Keep $_comp_path younger than cache time even if it isn't regenerated.
+  compinit -i -d "$_comp_path" # Keep $_comp_path younger than cache time even if it isn't regenerated.
   touch "$_comp_path"
 fi
 
 unset _comp_path
 
-# load brew autocomplete
-if [ -d "/home/linuxbrew/.linuxbrew/share/zsh/site-functions" ]; then
-    fpath+=(/home/linuxbrew/.linuxbrew/share/zsh/site-functions)
-fi
-
-autoload -Uz colors
-colors
 
 ############################
 # Exports
 ############################
 
+# Export Paths
 export_paths=(
   "$HOME/bin"
   "$HOME/.local/bin"
   /usr/local/bin
-  $path
+  "${path[@]}"
 )
 
 typeset -U path PATH
+path=("${export_paths[@]}")
 
-export EDITOR=nvim # Set default editor to Neovim.
+# Default Editor - Neovim
+export EDITOR=nvim
+
+# Bat Settings - https://github.com/sharkdp/bat
 export BAT_THEME="OneHalfDark"
 export BAT_STYLE="plain,header-filename,header-filesize,grid,snip"
-export DOCKER_HOST=unix:///run/user/1000/podman/podman.sock # Use Podman socket for Docker
-export TIME_STYLE='+%Y-%m-%d %l:%M%P' # Format for ls [YYYY-MM-DD 12-hr]
-# export LS_COLORS="$LS_COLORS:ow=30;44:" # fix ls color for folders with 777 permissions
-LS_COLORS=${LS_COLORS:-'di=34:ln=35:so=32:pi=33:ex=31:bd=36;01:cd=33;01:su=31;40;07:sg=36;40;07:tw=32;40;07:ow=33;40;07:'}
+
+# Docker - Use Podman Socket
+export DOCKER_HOST=unix:///run/user/1000/podman/podman.socket
+
+# Custom Time Format (YYYY-MM-DD 12hr)
+export TIME_STYLE='+%Y-%m-%d %l:%M%P'
+
+LS_COLORS=${LS_COLORS:-'di=34:ln=35:so=32:pi=33:ex=31:bd=36;01:cd=33;01:su=31;40;07:sg=36;40;07:tw=32;40;07:ow=30;44;07:'}
+
+# LESS and Pager Config
 # '-R' sends control characters to render colors, bold, etc..
 # '-X' don't clear the screen.
 # '-i' Causes searches to ignore case.
@@ -67,6 +82,8 @@ export LESS_TERMCAP_so=$'\E[01;33m'    # begin reverse video
 export LESS_TERMCAP_se=$'\E[0m'        # reset reverse video
 export LESS_TERMCAP_us=$'\E[1;32m'     # begin underline
 export LESS_TERMCAP_ue=$'\E[0m'        # reset underline
+
+# Man Pages - Use 120 Column Width
 export MANWIDTH=120
 
 ############################
@@ -76,6 +93,7 @@ export MANWIDTH=120
 zle -N edit-command-line
 zle -N up-line-or-beginning-search
 zle -N down-line-or-beginning-search
+
 bindkey "^X^E" edit-command-line # Edit current command line in $EDITOR
 bindkey -e # Emacs key bindings.
 bindkey ' ' magic-space # history expansion [Space]
@@ -92,6 +110,7 @@ bindkey '^[[3~' delete-char # Delete forwards [Delete]
 bindkey '^[[5~' up-line-or-history # [PageUp] a line of history
 bindkey '^[[6~' down-line-or-history # [PageDown] a line of history
 
+
 ############################
 # ZSH Options
 ############################
@@ -100,103 +119,112 @@ HISTFILE_DIR="$HOME/.local/share/zsh"
 mkdir -p $HISTFILE_DIR
 
 HISTFILE="$HISTFILE_DIR/.zsh_history"
-HISTSIZE=5000 # Number of commands to save to memory for current session.
-SAVEHIST=5000 # Number of commands saved to history file.
+HISTSIZE=10000 # Number of commands to save to memory for current session.
+SAVEHIST=10000 # Number of commands saved to history file.
 
-setopt SHARE_HISTORY # Share history across terminal sessions.
-setopt APPEND_HISTORY # Append to history.
-setopt HIST_EXPIRE_DUPS_FIRST # Expire duplicate commands first.
-setopt HIST_IGNORE_DUPS # Do not store duplications.
-setopt HIST_FIND_NO_DUPS # Ignore duplicates when searching.
-setopt HIST_REDUCE_BLANKS # Remove blank lines from history.
-setopt HIST_VERIFY # When using [!!] do not auto-hit enter.
-setopt HIST_IGNORE_SPACE # Don't add commands that start with a space.
-setopt EXTENDED_HISTORY # Save timestamps and duration in history.
-setopt RM_STAR_WAIT # Force prompts for confirmations after `rm *` etc.
+# Options - Completions
+setopt ALWAYS_TO_END # Move cursor to end if word had one match.
 setopt AUTO_LIST # Automatically list choices on ambiguous completion.
 setopt AUTO_MENU # Automatically use menu completion.
-setopt ALWAYS_TO_END # Move cursor to end if word had one match.
-setopt NOTIFY # Report status of background jobs immediately.
+setopt AUTO_PARAM_SLASH # If completed parameter is a directory, add a trailing slash.
+setopt COMPLETE_IN_WORD # Complete from both ends of a word.
+setopt CORRECT_ALL # Try to correct the spelling of all arguments in a line.
+setopt EXTENDED_GLOB # Enable extended globbing patterns.
+setopt GLOB_DOTS
 setopt NO_NOMATCH # Hide error message if there's no pattern match.
 setopt NUMERIC_GLOB_SORT # Sort filenames numerically when it makes sense.
-setopt PROMPT_SUBST # Enable command substitution in prompt.
-setopt CORRECT_ALL # Try to correct the spelling of all arguments in a line.
-setopt COMPLETE_IN_WORD # Complete from both ends of a word.
 setopt PATH_DIRS # Perform path search even on command names with slashes.
-setopt AUTO_PARAM_SLASH # If completed parameter is a directory, add a trailing slash.
-setopt EXTENDED_GLOB
-unsetopt MENU_COMPLETE # Do not autoselect the first completion entry.
-unsetopt FLOW_CONTROL # Disable start/stop characters in shell editor.
-setopt interactivecomments # Allow inline comments
-
-WORDCHARS=${WORDCHARS//\/} # Define which characters are part of a word.
-
-# Autosuggest Options
+setopt PROMPT_SUBST # Enable command substitution in prompt.
+ZSH_AUTOSUGGEST_BUFFER_MAX_SIZE=20
 ZSH_AUTOSUGGEST_STRATEGY=(completion history)
 
-# Syntax Highlighting Options
+# Options - Disabled
+unsetopt CASE_GLOB # Disable case-insensitive globbing.
+unsetopt FLOW_CONTROL # Disable <Ctrl>S / <Ctrl>Q flow control.
+unsetopt BEEP # Disable annoying beeps.
+unsetopt MENU_COMPLETE # Do not autoselect the first completion entry.
+
+# Options - Highlighting
 ZSH_HIGHLIGHT_HIGHLIGHTERS=(main brackets cursor)
-ZSH_AUTOSUGGEST_BUFFER_MAX_SIZE=20
 
-zstyle ':completion:*' list-suffixes
-zstyle ':completion:*' expand prefix suffix
+# Options - History
+setopt APPEND_HISTORY # Append to history.
+setopt EXTENDED_HISTORY # Save timestamps and duration in history.
+setopt HIST_EXPIRE_DUPS_FIRST # Expire duplicate commands first.
+setopt HIST_FIND_NO_DUPS # Ignore duplicates when searching.
+setopt HIST_IGNORE_DUPS # Do not store duplications.
+setopt HIST_IGNORE_SPACE # Don't add commands that start with a space.
+setopt HIST_REDUCE_BLANKS # Remove blank lines from history.
+setopt HIST_VERIFY # When using [!!] do not auto-hit enter.
+setopt SHARE_HISTORY # Share history across terminal sessions.
 
+# Options - Misc
+setopt interactivecomments # Allow inline comments on commands.
+setopt NOTIFY # Report status of background jobs immediately.
+WORDCHARS=${WORDCHARS//\/} # Exclude `/` from word characters.
+
+# Options - Safety
+setopt RM_STAR_WAIT # Force prompts for confirmations after `rm *`.
+
+
+############################
+# ZSH Completion Styles
+############################
+
+# Caching
 zstyle ':completion:*' use-cache on
 zstyle ':completion:*' cache-path "$HOME/.cache/zsh/.zcompcache"
+zstyle ':completion:*' rehash true
+zstyle ':completion:*' use-compctl false
 
-zstyle ':completion:*:*:*:*:*' menu select
+# Disable default menu completion UI in favor of fzf-tab
+zstyle ':completion:*' menu no
+
+# Listing
+zstyle ':completion:*' expand prefix suffix
+zstyle ':completion:*' list-suffixes
+zstyle ':completion:*' list-prompt %SAt %p: Hit TAB for more, or the character to insert%s
+zstyle ':completion:*:corrections' format '-- %d (errors: %e) --'
+zstyle ':completion:*:descriptions' format '-- %d --'
+zstyle ':completion:*:messages' format '-- %d --'
+zstyle ':completion:*:warnings' format '-- no matches found --'
+
+# Colors
+zstyle ':completion:*' list-colors "${(s.:.)LS_COLORS}"
+
+# Descriptions and Format
 zstyle ':completion:*' auto-description 'specify: %d'
 zstyle ':completion:*' completer _expand _complete _match _approximate
 zstyle ':completion:*:match:*' original only
 zstyle ':completion:*:approximate:*' max-errors 1 numeric
 zstyle -e ':completion:*:approximate:*' max-errors 'reply=($((($#PREFIX+$#SUFFIX)/3>7?7:($#PREFIX+$#SUFFIX)/3))numeric)'
 zstyle ':completion:*' format '-- %d --'
-zstyle ':completion:*:functions' ignored-patterns '(_*|pre(cmd|exec))'
-
-zstyle ':completion:*:matches' group 'yes'
-zstyle ':completion:*:options' description 'yes'
-zstyle ':completion:*:options' auto-description '%d'
-zstyle ':completion:*:corrections' format '-- %d (errors: %e) --'
-zstyle ':completion:*:descriptions' format ' -- %d --'
-zstyle ':completion:*:messages' format '-- %d --'
-zstyle ':completion:*:warnings' format '-- no matches found --'
 
 # Array completion element sorting.
 zstyle ':completion:*:*:-subscript-:*' tag-order indexes parameters
 
-zstyle ':completion:*' group-name ''
-zstyle ':completion:*' list-colors ''
-zstyle ':completion:*' list-prompt %SAt %p: Hit TAB for more, or the character to insert%s
-
-zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}' 'r:|[._-]=* r:|=*' 'l:|=* r:|=*'
-unsetopt CASE_GLOB
-
-zstyle ':completion:*' rehash true
-zstyle ':completion:*' select-prompt %SScrolling active: current selection at %p%s
-zstyle ':completion:*' use-compctl false
-zstyle ':completion:*' verbose true
-zstyle ':completion:*' list-colors "${(s.:.)LS_COLORS}"
-zstyle ':completion:*:*:*:*:processes' command 'ps -u $LOGNAME -o pid,user,%cpu,tty,cputime,command -w'
-zstyle ':completion:*:*:kill:*:processes' list-colors '=(#b) #([0-9]#) ([0-9a-z-]#)*=01;36=0=01'
-zstyle ':completion:*:*:kill:*' menu yes select
-zstyle ':completion:*:*:kill:*' force-list always
-zstyle ':completion:*:*:kill:*' insert-ids single
-
-# Ignore multiple entries.
-zstyle ':completion:*:(rm|kill|diff):*' ignore-line other
-zstyle ':completion:*:rm:*' file-patterns '*:all-files'
-
-zstyle ':completion:*:*:cd:*' tag-order local-directories directory-stack path-directories
-zstyle ':completion:*:*:cd:*:directory-stack' menu yes select
-zstyle ':completion:*:-tilde-:*' group-order 'named-directories' 'path-directories' 'users' 'expand'
-zstyle ':completion:*' squeeze-slashes true
-
 # Environment Variables
 zstyle ':completion::*:(-command-|export):*' fake-parameters ${${${_comps[(I)-value-*]#*,}%%,*}:#-*-}
 
-# Man
+# Files
+zstyle ':completion:*:*:cd:*' tag-order local-directories directory-stack path-directories # Bluefin
+zstyle ':completion:*:*:cd:*:directory-stack' menu yes select # Bluefin
+zstyle ':completion:*:-tilde-:*' group-order 'named-directories' 'path-directories' 'users' 'expand' # Bluefin
+zstyle ':completion:*' squeeze-slashes true
+zstyle ':completion:*' group-name ''
+
+# Man Pages
 zstyle ':completion:*:manuals' separate-sections true
 zstyle ':completion:*:manuals.(^1*)' insert-sections true
+
+# Matcher List
+zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}' 'r:|[._-]=* r:|=*' 'l:|=* r:|=*'
+
+# Ignored Patterns and Sorting
+zstyle ':completion:*:functions' ignored-patterns '(_*|pre(cmd|exec))'
+zstyle ':completion:*:matches' group 'yes'
+zstyle ':completion:*:options' description 'yes'
+zstyle ':completion:*:options' auto-description '%d'
 
 # History
 zstyle ':completion:*:history-words' stop yes
@@ -204,26 +232,36 @@ zstyle ':completion:*:history-words' remove-all-dups yes
 zstyle ':completion:*:history-words' list false
 zstyle ':completion:*:history-words' menu yes
 
-# SSH/SCP/RSYNC
-zstyle ':completion:*:(ssh|scp|rsync):*' tag-order 'hosts:-host:host hosts:-domain:domain hosts:-ipaddr:ip\ address *'
+# Ignore multiple entries.
+zstyle ':completion:*:(rm|kill|diff):*' ignore-line other
+
+# Kill
+zstyle ':completion:*:*:*:*:processes' command 'ps -u $LOGNAME -o pid,user,command -w'
+zstyle ':completion:*:*:kill:*:processes' list-colors '=(#b) #([0-9]#) ([0-9a-z-]#)*=01;36=0=01'
+zstyle ':completion:*:*:kill:*' menu yes select
+zstyle ':completion:*:*:kill:*' force-list always
+zstyle ':completion:*:*:kill:*' insert-ids single
+
+# SSH/SCP/RSYNC Hosts
+zstyle ':completion:*:(ssh|scp|rsync):*' tag-order 'hosts:-host:host hosts:-domain:domain hosts:-ipaddr:ip address *'
 zstyle ':completion:*:(scp|rsync):*' group-order users files all-files hosts-domain hosts-host hosts-ipaddr
 zstyle ':completion:*:ssh:*' group-order users hosts-domain hosts-host users hosts-ipaddr
 zstyle ':completion:*:(ssh|scp|rsync):*:hosts-host' ignored-patterns '*(.|:)*' loopback ip6-loopback localhost ip6-localhost broadcasthost
 zstyle ':completion:*:(ssh|scp|rsync):*:hosts-domain' ignored-patterns '<->.<->.<->.<->' '^[-[:alnum:]]##(.[-[:alnum:]]##)##' '*@*'
 zstyle ':completion:*:(ssh|scp|rsync):*:hosts-ipaddr' ignored-patterns '^(<->.<->.<->.<->|(|::)([[:xdigit:].]##:(#c,2))##(|%*))' '127.0.0.<->' '255.255.255.255' '::1' 'fe80::*'
 
+# Git
 zstyle ':completion:*:git-checkout:*' sort false
-# set descriptions format to enable group support
-# NOTE: don't use escape sequences here, fzf-tab will ignore them
+
+# FZF-Tab
 zstyle ':completion:*:descriptions' format '[%d]'
-# set list-colors to enable filename colorizing
-zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
-# force zsh not to show completion menu, which allows fzf-tab to capture the unambiguous prefix
-zstyle ':completion:*' menu no
-# preview directory's content with eza when completing cd
-zstyle ':fzf-tab:complete:cd:*' fzf-preview 'eza -1 --color=always $realpath'
-# switch group using `<` and `>`
 zstyle ':fzf-tab:*' switch-group '<' '>'
+zstyle ':fzf-tab:complete:cd:*' fzf-preview 'eza -a1 --color=always --group-directories-first $realpath'
+
+# Completion Prompt
+zstyle ':completion:*' select-prompt %SScrolling active: current selection at %p%s
+zstyle ':completion:*' verbose true
+
 
 ############################
 # Functions
@@ -238,6 +276,7 @@ xterm*|rxvt*|Eterm|aterm|kterm|gnome*|alacritty)
     TERM_TITLE=$'\e]0;${debian_chroot:+($debian_chroot)}${VIRTUAL_ENV:+($(basename $VIRTUAL_ENV))}%n@%m: %~\a'
     ;;
 *)
+    TERM_TITLE=''
     ;;
 esac
 
@@ -257,22 +296,24 @@ clear() {
     command clear
 }
 
-# Go directly to the projects directory, with autocompletion
+# Navigate to ~/Projects/$1 with autocompletion support
 projects() {
-  cd "$HOME/Projects/$1"
+  if [[ -z "$1" ]]; then
+    echo "Usage: projects <project-name>"
+    return 1
+  fi
+  cd "$HOME/Projects/$1" || echo "Project directory not found: $1"
 }
 
 _projects() {
   _arguments '*::project:->project'
 
-  case $state in
-    project)
-      local expl
-      local -a dirs
-      dirs=(${(f)"$(find $HOME/Projects -type d -maxdepth 1 -mindepth 1 -exec basename {} \; 2>/dev/null)"})
-      _describe 'project' dirs
-      ;;
-  esac
+  if [[ $state == project ]]; then
+    local -a dirs
+    # List directories directly under ~/Projects
+    dirs=(${(f)"$(find "$HOME/Projects" -maxdepth 1 -mindepth 1 -type d -exec basename {} \; 2>/dev/null)"})
+    _describe 'project' dirs
+  fi
 }
 
 compdef _projects projects
@@ -304,33 +345,40 @@ npx() {
   npx $@
 }
 
+# Override sudo to use systemd-run with root privileges and preserve environment
 sudo() {
   /usr/bin/systemd-run --uid=0 --gid=0 --same-dir -E TERM=$TERM -E PATH=$PATH --pty --quiet --pipe --collect "$@"
 }
+
 
 ############################
 # Aliases
 ############################
 
-# Editor
-alias nano=nvim # Use Neovim instead of nano.
-alias vim=nvim # Use Neovim instead of vim.
+# Editors
+alias n="nvim"
+alias vim="n"
 alias code="flatpak run com.vscodium.codium"
 alias codium="code"
 
-# Utilities
+# Files
+alias ..="cd .."
+alias ...="cd ../.."
 alias bat="bat --tabs=4 --terminal-width=120"
 alias cat="bat"
 alias grep="grep --color=auto"
 alias l="eza -agh --icons=always --hyperlink --width=120 --group-directories-first"
-alias ll="eza -lagh --icons=always --hyperlink --width=120 --group-directories-first --smart-group --git"
+alias ll="l -l --smart-group --git"
 alias lll="ll --total-size"
 alias ls="ll"
 alias lst="lll"
 alias rm="rm -ri"
 alias rmf="rm -rif"
+
+# Windows
 alias c="clear"
 alias e="exit"
+
 
 ############################
 # Init

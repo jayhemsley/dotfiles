@@ -180,5 +180,8 @@
   },
   "errorLens.codeLensEnabled": true,
   "errorLens.enabledDiagnosticLevels": ["error", "warning"],
-  "update.mode": "none"
+  "update.mode": "none",
+  "git.enableSmartCommit": true,
+  "git.confirmSync": false,
+  "window.dialogStyle": "custom"
 }
