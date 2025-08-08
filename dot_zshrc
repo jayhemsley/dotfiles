@@ -31,6 +31,9 @@ if [ -d "/home/linuxbrew/.linuxbrew/share/zsh/site-functions" ]; then
     fpath+=(/home/linuxbrew/.linuxbrew/share/zsh/site-functions)
 fi
 
+autoload -Uz colors
+colors
+
 ############################
 # Exports
 ############################
@@ -49,7 +52,8 @@ export BAT_THEME="OneHalfDark"
 export BAT_STYLE="plain,header-filename,header-filesize,grid,snip"
 export DOCKER_HOST=unix:///run/user/1000/podman/podman.sock # Use Podman socket for Docker
 export TIME_STYLE='+%Y-%m-%d %l:%M%P' # Format for ls [YYYY-MM-DD 12-hr]
-export LS_COLORS="$LS_COLORS:ow=30;44:" # fix ls color for folders with 777 permissions
+# export LS_COLORS="$LS_COLORS:ow=30;44:" # fix ls color for folders with 777 permissions
+LS_COLORS=${LS_COLORS:-'di=34:ln=35:so=32:pi=33:ex=31:bd=36;01:cd=33;01:su=31;40;07:sg=36;40;07:tw=32;40;07:ow=33;40;07:'}
 # '-R' sends control characters to render colors, bold, etc..
 # '-X' don't clear the screen.
 # '-i' Causes searches to ignore case.
@@ -146,16 +150,16 @@ zstyle ':completion:*' completer _expand _complete _match _approximate
 zstyle ':completion:*:match:*' original only
 zstyle ':completion:*:approximate:*' max-errors 1 numeric
 zstyle -e ':completion:*:approximate:*' max-errors 'reply=($((($#PREFIX+$#SUFFIX)/3>7?7:($#PREFIX+$#SUFFIX)/3))numeric)'
-zstyle ':completion:*' format ' %F{yellow}-- %d --%f'
+zstyle ':completion:*' format '-- %d --'
 zstyle ':completion:*:functions' ignored-patterns '(_*|pre(cmd|exec))'
 
 zstyle ':completion:*:matches' group 'yes'
 zstyle ':completion:*:options' description 'yes'
 zstyle ':completion:*:options' auto-description '%d'
-zstyle ':completion:*:corrections' format ' %F{green}-- %d (errors: %e) --%f'
-zstyle ':completion:*:descriptions' format ' %F{yellow}-- %d --%f'
-zstyle ':completion:*:messages' format ' %F{purple} -- %d --%f'
-zstyle ':completion:*:warnings' format ' %F{red}-- no matches found --%f'
+zstyle ':completion:*:corrections' format '-- %d (errors: %e) --'
+zstyle ':completion:*:descriptions' format ' -- %d --'
+zstyle ':completion:*:messages' format '-- %d --'
+zstyle ':completion:*:warnings' format '-- no matches found --'
 
 # Array completion element sorting.
 zstyle ':completion:*:*:-subscript-:*' tag-order indexes parameters
@@ -331,9 +335,6 @@ alias e="exit"
 ############################
 # Init
 ############################
-
-autoload -U colors
-colors
 
 # Sources
 source /usr/share/zsh-fzf-tab/fzf-tab.plugin.zsh # FZF-Tab
