@@ -1,0 +1,8 @@
+[org/gnome/TextEditor]
+style-scheme='Adwaita-dark'
+highlight-current-line=true
+show-map=false
+show-right-margin=false
+right-margin-position=120
+indent-style='space'
+tab-width=4

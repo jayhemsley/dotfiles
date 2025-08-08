@@ -1,0 +1,183 @@
+{
+  "terminal.integrated.defaultProfile.linux": "zsh",
+  "terminal.integrated.profiles.linux": {
+    "zsh": {
+      "path": "/app/bin/host-spawn",
+      "args": ["zsh"],
+      "icon": "terminal-linux",
+      "overrideName": true
+    }
+  },
+  "css.validate": false,
+  "less.validate": false,
+  "scss.validate": false,
+  "editor.fontSize": 16,
+  "update.showReleaseNotes": false,
+  "telemetry.editStats.enabled": false,
+  "telemetry.feedback.enabled": false,
+  "window.menuBarVisibility": "compact",
+  "window.openFoldersInNewWindow": "on",
+  "workbench.enableExperiments": false,
+  "workbench.list.smoothScrolling": true,
+  "workbench.remoteIndicator.showExtensionRecommendations": false,
+  "workbench.welcomePage.extraAnnouncements": false,
+  "workbench.tips.enabled": false,
+  "editor.cursorSmoothCaretAnimation": "on",
+  "editor.fontFamily": "'Monaspace Neon', 'monospace', monospace",
+  "editor.fontLigatures": true,
+  "editor.fontWeight": "normal",
+  "editor.formatOnSave": true,
+  "editor.formatOnSaveMode": "file",
+  "editor.formatOnPaste": true,
+  "editor.formatOnType": true,
+  "files.insertFinalNewline": true,
+  "files.readonlyFromPermissions": true,
+  "files.trimFinalNewlines": true,
+  "editor.wordWrap": "wordWrapColumn",
+  "editor.wordWrapColumn": 120,
+  "debug.console.fontSize": 16,
+  "terminal.integrated.fontLigatures.enabled": true,
+  "terminal.integrated.fontLigatures.fallbackLigatures": [
+    "<--",
+    "<---",
+    "<<-",
+    "<-",
+    "->",
+    "->>",
+    "-->",
+    "--->",
+    "<==",
+    "<===",
+    "<<=",
+    "<=",
+    "=>",
+    "=>>",
+    "==>",
+    "===>",
+    ">=",
+    ">>=",
+    "<->",
+    "<-->",
+    "<--->",
+    "<---->",
+    "<=>",
+    "<==>",
+    "<===>",
+    "<====>",
+    "::",
+    ":::",
+    "<~~",
+    "</",
+    "</>",
+    "/>",
+    "~~>",
+    "==",
+    "!=",
+    "/=",
+    "~=",
+    "<>",
+    "===",
+    "!==",
+    "!===",
+    "<:",
+    ":=",
+    "*=",
+    "*+",
+    "<*",
+    "<*>",
+    "*>",
+    "<|",
+    "<|>",
+    "|>",
+    "+*",
+    "=*",
+    "=:",
+    ":>",
+    "/*",
+    "*/",
+    "+++",
+    "<!--",
+    "<!---"
+  ],
+  "terminal.integrated.fontLigatures.featureSettings": "\"calt\" on, \"liga\" on",
+  "terminal.integrated.fontSize": 16,
+  "markdown.preview.fontSize": 16,
+  "terminal.external.linuxExec": "ptyxis",
+  "terminal.integrated.cursorBlinking": true,
+  "terminal.integrated.cursorStyle": "line",
+  "terminal.integrated.cursorStyleInactive": "none",
+  "terminal.integrated.enableVisualBell": true,
+  "terminal.integrated.smoothScrolling": true,
+  "workbench.colorTheme": "Tokyo Night",
+  "editor.tokenColorCustomizations": {
+    "[Tokyo Night]": {
+      "textMateRules": [
+        {
+          "scope": [
+            "comment keyword.codetag.notation",
+            "comment.block.documentation keyword",
+            "comment.block.documentation storage.type.class"
+          ],
+          "settings": {
+            "foreground": "#bb9af7"
+          }
+        },
+        {
+          "scope": ["comment.block.documentation entity.name.type.instance"],
+          "settings": {
+            "foreground": "#73daca",
+            "fontStyle": "italic"
+          }
+        },
+        {
+          "scope": [
+            "comment.block.documentation entity.name.type punctuation.definition.bracket"
+          ],
+          "settings": {
+            "foreground": "#bb9af7"
+          }
+        },
+        {
+          "scope": ["comment.block.documentation variable"],
+          "settings": {
+            "foreground": "#e0af68",
+            "fontStyle": "italic"
+          }
+        }
+      ]
+    }
+  },
+  "workbench.iconTheme": "material-icon-theme",
+  "workbench.productIconTheme": "fluent-icons",
+  "editor.linkedEditing": true,
+  "editor.quickSuggestions": {
+    "strings": "on"
+  },
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit",
+    "source.fixAll.stylelint": "explicit",
+    "source.fixAll.markdownlint": "explicit"
+  },
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "typescript.suggest.paths": false,
+  "javascript.suggest.paths": false,
+  "path-intellisense.showHiddenFiles": true,
+  "js-auto-backticks.enableRevert": true,
+  "typescript.inlayHints.parameterNames.enabled": "all",
+  "auto-close-tag.fullMode": true,
+  "auto-close-tag.insertSpaceBeforeSelfClosingTag": true,
+  "errorLens.gutterIconsEnabled": true,
+  "workbench.startupEditor": "none",
+  "errorLens.decorations": {
+    "errorRange": {},
+    "warningRange": {},
+    "infoRange": {},
+    "hintRange": {},
+    "errorMessage": {},
+    "warningMessage": {},
+    "infoMessage": {},
+    "hintMessage": {}
+  },
+  "errorLens.codeLensEnabled": true,
+  "errorLens.enabledDiagnosticLevels": ["error", "warning"]
+}
