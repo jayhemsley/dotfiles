@@ -179,5 +179,6 @@
     "hintMessage": {}
   },
   "errorLens.codeLensEnabled": true,
-  "errorLens.enabledDiagnosticLevels": ["error", "warning"]
+  "errorLens.enabledDiagnosticLevels": ["error", "warning"],
+  "update.mode": "none"
 }

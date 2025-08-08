@@ -5,18 +5,45 @@
 autoload -Uz bashcompinit
 autoload -Uz compinit
 autoload -Uz edit-command-line
+autoload -Uz up-line-or-beginning-search down-line-or-beginning-search
 
 export FPATH="/usr/share/zsh-eza-completions/zsh:$FPATH"
 
-mkdir -p "$HOME/.cache/zsh"
-compinit -d "$HOME/.cache/zsh/.zcompdump"
 bashcompinit
+
+_comp_path="$HOME/.cache/zsh/.zcompdump"
+
+# #q expands globs in conditional expressions
+if [[ $_comp_path(#qNmh-20) ]]; then
+  # -C (skip function check) implies -i (skip security check).
+  compinit -C -d "$_comp_path"
+else
+  mkdir -p "$_comp_path:h"
+  compinit -i -d "$_comp_path"
+  # Keep $_comp_path younger than cache time even if it isn't regenerated.
+  touch "$_comp_path"
+fi
+
+unset _comp_path
+
+# load brew autocomplete
+if [ -d "/home/linuxbrew/.linuxbrew/share/zsh/site-functions" ]; then
+    fpath+=(/home/linuxbrew/.linuxbrew/share/zsh/site-functions)
+fi
 
 ############################
 # Exports
 ############################
 
-export PATH=$HOME/bin:$HOME/.local/bin:/usr/local/bin:$PATH
+export_paths=(
+  "$HOME/bin"
+  "$HOME/.local/bin"
+  /usr/local/bin
+  $path
+)
+
+typeset -U path PATH
+
 export EDITOR=nvim # Set default editor to Neovim.
 export BAT_THEME="OneHalfDark"
 export BAT_STYLE="plain,header-filename,header-filesize,grid,snip"
@@ -43,14 +70,16 @@ export MANWIDTH=120
 ############################
 
 zle -N edit-command-line
+zle -N up-line-or-beginning-search
+zle -N down-line-or-beginning-search
 bindkey "^X^E" edit-command-line # Edit current command line in $EDITOR
 bindkey -e # Emacs key bindings.
 bindkey ' ' magic-space # history expansion [Space]
 bindkey '^ ' autosuggest-accept # Auto accept suggestion
 bindkey '^[[H' beginning-of-line # Home
 bindkey '^[[F' end-of-line # End
-bindkey '^[[A' up-line-or-search # Typing + [Up Arrow] Fuzzy search forward
-bindkey '^[[B' down-line-or-search # Typing + [Down Arrow] Fuzzy search backward
+bindkey "${terminfo[kcuu1]}" up-line-or-beginning-search # Typing + [Up Arrow] Fuzzy search forward
+bindkey "${terminfo[kcud1]}" down-line-or-beginning-search # Typing + [Down Arrow] Fuzzy search backward
 bindkey '^[[1;5C' forward-word # ctrl + ->
 bindkey '^[[1;5D' backward-word # ctrl + <-
 bindkey '^[[Z' reverse-menu-complete # go backwards in completion menu [Shift + Tab]
@@ -88,6 +117,13 @@ setopt NO_NOMATCH # Hide error message if there's no pattern match.
 setopt NUMERIC_GLOB_SORT # Sort filenames numerically when it makes sense.
 setopt PROMPT_SUBST # Enable command substitution in prompt.
 setopt CORRECT_ALL # Try to correct the spelling of all arguments in a line.
+setopt COMPLETE_IN_WORD # Complete from both ends of a word.
+setopt PATH_DIRS # Perform path search even on command names with slashes.
+setopt AUTO_PARAM_SLASH # If completed parameter is a directory, add a trailing slash.
+setopt EXTENDED_GLOB
+unsetopt MENU_COMPLETE # Do not autoselect the first completion entry.
+unsetopt FLOW_CONTROL # Disable start/stop characters in shell editor.
+setopt interactivecomments # Allow inline comments
 
 WORDCHARS=${WORDCHARS//\/} # Define which characters are part of a word.
 
@@ -106,19 +142,71 @@ zstyle ':completion:*' cache-path "$HOME/.cache/zsh/.zcompcache"
 
 zstyle ':completion:*:*:*:*:*' menu select
 zstyle ':completion:*' auto-description 'specify: %d'
-zstyle ':completion:*' completer _expand _complete
-zstyle ':completion:*' format 'Completing %d'
+zstyle ':completion:*' completer _expand _complete _match _approximate
+zstyle ':completion:*:match:*' original only
+zstyle ':completion:*:approximate:*' max-errors 1 numeric
+zstyle -e ':completion:*:approximate:*' max-errors 'reply=($((($#PREFIX+$#SUFFIX)/3>7?7:($#PREFIX+$#SUFFIX)/3))numeric)'
+zstyle ':completion:*' format ' %F{yellow}-- %d --%f'
+zstyle ':completion:*:functions' ignored-patterns '(_*|pre(cmd|exec))'
+
+zstyle ':completion:*:matches' group 'yes'
+zstyle ':completion:*:options' description 'yes'
+zstyle ':completion:*:options' auto-description '%d'
+zstyle ':completion:*:corrections' format ' %F{green}-- %d (errors: %e) --%f'
+zstyle ':completion:*:descriptions' format ' %F{yellow}-- %d --%f'
+zstyle ':completion:*:messages' format ' %F{purple} -- %d --%f'
+zstyle ':completion:*:warnings' format ' %F{red}-- no matches found --%f'
+
+# Array completion element sorting.
+zstyle ':completion:*:*:-subscript-:*' tag-order indexes parameters
+
 zstyle ':completion:*' group-name ''
 zstyle ':completion:*' list-colors ''
 zstyle ':completion:*' list-prompt %SAt %p: Hit TAB for more, or the character to insert%s
-zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}'
+
+zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}' 'r:|[._-]=* r:|=*' 'l:|=* r:|=*'
+unsetopt CASE_GLOB
+
 zstyle ':completion:*' rehash true
 zstyle ':completion:*' select-prompt %SScrolling active: current selection at %p%s
 zstyle ':completion:*' use-compctl false
 zstyle ':completion:*' verbose true
-zstyle ':completion:*:kill:*' command 'ps -u $USER -o pid,%cpu,tty,cputime,cmd'
 zstyle ':completion:*' list-colors "${(s.:.)LS_COLORS}"
-zstyle ':completion:*:*:kill:*:processes' list-colors '=(#b) #([0-9]#)*=0=01;31'
+zstyle ':completion:*:*:*:*:processes' command 'ps -u $LOGNAME -o pid,user,%cpu,tty,cputime,command -w'
+zstyle ':completion:*:*:kill:*:processes' list-colors '=(#b) #([0-9]#) ([0-9a-z-]#)*=01;36=0=01'
+zstyle ':completion:*:*:kill:*' menu yes select
+zstyle ':completion:*:*:kill:*' force-list always
+zstyle ':completion:*:*:kill:*' insert-ids single
+
+# Ignore multiple entries.
+zstyle ':completion:*:(rm|kill|diff):*' ignore-line other
+zstyle ':completion:*:rm:*' file-patterns '*:all-files'
+
+zstyle ':completion:*:*:cd:*' tag-order local-directories directory-stack path-directories
+zstyle ':completion:*:*:cd:*:directory-stack' menu yes select
+zstyle ':completion:*:-tilde-:*' group-order 'named-directories' 'path-directories' 'users' 'expand'
+zstyle ':completion:*' squeeze-slashes true
+
+# Environment Variables
+zstyle ':completion::*:(-command-|export):*' fake-parameters ${${${_comps[(I)-value-*]#*,}%%,*}:#-*-}
+
+# Man
+zstyle ':completion:*:manuals' separate-sections true
+zstyle ':completion:*:manuals.(^1*)' insert-sections true
+
+# History
+zstyle ':completion:*:history-words' stop yes
+zstyle ':completion:*:history-words' remove-all-dups yes
+zstyle ':completion:*:history-words' list false
+zstyle ':completion:*:history-words' menu yes
+
+# SSH/SCP/RSYNC
+zstyle ':completion:*:(ssh|scp|rsync):*' tag-order 'hosts:-host:host hosts:-domain:domain hosts:-ipaddr:ip\ address *'
+zstyle ':completion:*:(scp|rsync):*' group-order users files all-files hosts-domain hosts-host hosts-ipaddr
+zstyle ':completion:*:ssh:*' group-order users hosts-domain hosts-host users hosts-ipaddr
+zstyle ':completion:*:(ssh|scp|rsync):*:hosts-host' ignored-patterns '*(.|:)*' loopback ip6-loopback localhost ip6-localhost broadcasthost
+zstyle ':completion:*:(ssh|scp|rsync):*:hosts-domain' ignored-patterns '<->.<->.<->.<->' '^[-[:alnum:]]##(.[-[:alnum:]]##)##' '*@*'
+zstyle ':completion:*:(ssh|scp|rsync):*:hosts-ipaddr' ignored-patterns '^(<->.<->.<->.<->|(|::)([[:xdigit:].]##:(#c,2))##(|%*))' '127.0.0.<->' '255.255.255.255' '::1' 'fe80::*'
 
 zstyle ':completion:*:git-checkout:*' sort false
 # set descriptions format to enable group support
@@ -212,6 +300,10 @@ npx() {
   npx $@
 }
 
+sudo() {
+  /usr/bin/systemd-run --uid=0 --gid=0 --same-dir -E TERM=$TERM -E PATH=$PATH --pty --quiet --pipe --collect "$@"
+}
+
 ############################
 # Aliases
 ############################
@@ -235,16 +327,30 @@ alias rm="rm -ri"
 alias rmf="rm -rif"
 alias c="clear"
 alias e="exit"
-alias sudo="/usr/bin/systemd-run --uid=0 --gid=0 --same-dir -E TERM=$TERM -E PATH=$PATH --pty --quiet --pipe --collect $@"
 
 ############################
 # Init
 ############################
 
+autoload -U colors
+colors
+
 # Sources
 source /usr/share/zsh-fzf-tab/fzf-tab.plugin.zsh # FZF-Tab
 source /usr/share/zsh-autosuggestions/zsh-autosuggestions.zsh # Suggestions
 source /usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh # Syntax Highlighting
+
+# Brew 
+if [[ -o interactive ]] && [[ -d /home/linuxbrew/.linuxbrew ]]; then
+  eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+  if type brew &>/dev/null; then
+    if [[ -w /home/linuxbrew/.linuxbrew ]]; then
+      if [[ ! -L "$(brew --prefix)/share/zsh/site-functions/_brew" ]]; then
+        brew completions link
+      fi
+    fi
+  fi
+fi
 
 # fzf
 eval "$(fzf --zsh)"
