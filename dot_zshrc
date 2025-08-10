@@ -6,7 +6,9 @@
 autoload -Uz bashcompinit compinit
 
 # Keybindings
-autoload -Uz edit-command-line up-line-or-beginning-search down-line-or-beginning-search
+autoload -Uz edit-command-line
+autoload -Uz up-line-or-beginning-search
+autoload -Uz down-line-or-beginning-search
 
 # Set fpath
 local -a current_fpath=("${fpath[@]}") # Get current.
@@ -100,8 +102,10 @@ bindkey ' ' magic-space # history expansion [Space]
 bindkey '^ ' autosuggest-accept # Auto accept suggestion
 bindkey '^[[H' beginning-of-line # Home
 bindkey '^[[F' end-of-line # End
-bindkey "${terminfo[kcuu1]}" up-line-or-beginning-search # Typing + [Up Arrow] Fuzzy search forward
-bindkey "${terminfo[kcud1]}" down-line-or-beginning-search # Typing + [Down Arrow] Fuzzy search backward
+# bindkey "${terminfo[kcuu1]}" up-line-or-beginning-search # Typing + [Up Arrow] Fuzzy search forward
+#bindkey "${terminfo[kcud1]}" down-line-or-beginning-search # Typing + [Down Arrow] Fuzzy search backward
+bindkey '^[[A' up-line-or-beginning-search # Typing + [Up Arrow] Fuzzy search forward
+bindkey '^[[B' down-line-or-beginning-search # Typing + [Down Arrow] Fuzzy search backward
 bindkey '^[[1;5C' forward-word # ctrl + ->
 bindkey '^[[1;5D' backward-word # ctrl + <-
 bindkey '^[[Z' reverse-menu-complete # go backwards in completion menu [Shift + Tab]
