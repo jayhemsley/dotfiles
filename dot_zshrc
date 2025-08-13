@@ -63,7 +63,7 @@ export BAT_THEME="OneHalfDark"
 export BAT_STYLE="plain,header-filename,header-filesize,grid,snip"
 
 # Docker - Use Podman Socket
-export DOCKER_HOST=unix:///run/user/1000/podman/podman.socket
+export DOCKER_HOST=unix:///run/user/1000/podman/podman.sock
 
 # Custom Time Format (YYYY-MM-DD 12hr)
 export TIME_STYLE='+%Y-%m-%d %l:%M%P'

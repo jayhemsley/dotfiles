@@ -183,5 +183,8 @@
   "update.mode": "none",
   "git.enableSmartCommit": true,
   "git.confirmSync": false,
-  "window.dialogStyle": "custom"
+  "window.dialogStyle": "custom",
+  "files.exclude": {
+    "**/.git": false
+  }
 }

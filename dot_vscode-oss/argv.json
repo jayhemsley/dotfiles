@@ -16,6 +16,5 @@
 
   // Unique id used for correlating crash reports sent from this instance.
   // Do not edit this value.
-  "crash-reporter-id": "00000-00000-00000-00000-00000",
-  "enable-proposed-api": ["3timeslazy.vscodium-devpodcontainers"]
+  "crash-reporter-id": "00000-00000-00000-00000-00000"
 }
