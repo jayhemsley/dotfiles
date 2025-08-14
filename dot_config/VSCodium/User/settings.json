@@ -1,13 +1,13 @@
 {
-  "terminal.integrated.defaultProfile.linux": "zsh",
-  "terminal.integrated.profiles.linux": {
-    "zsh": {
-      "path": "/app/bin/host-spawn",
-      "args": ["zsh"],
-      "icon": "terminal-linux",
-      "overrideName": true
-    }
-  },
+//   "terminal.integrated.defaultProfile.linux": "zsh",
+//   "terminal.integrated.profiles.linux": {
+//     "zsh": {
+//       "path": "/app/bin/host-spawn",
+//       "args": ["zsh"],
+//       "icon": "terminal-linux",
+//       "overrideName": true
+//     }
+//   },
   "css.validate": false,
   "less.validate": false,
   "scss.validate": false,
@@ -186,5 +186,5 @@
   "window.dialogStyle": "custom",
   "files.exclude": {
     "**/.git": false
-  }
+  },
 }

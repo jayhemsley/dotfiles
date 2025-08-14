@@ -362,6 +362,8 @@ sudo() {
 # Editors
 alias n="nvim"
 alias vim="n"
+alias code="/usr/share/codium/codium --enable-features=UseOzonePlatform,WaylandWindowDecorations --ozone-platform-hint=auto"
+alias codium="code"
 
 # Files
 alias ..="cd .."
