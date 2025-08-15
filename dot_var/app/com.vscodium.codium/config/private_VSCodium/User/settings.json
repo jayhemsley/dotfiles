@@ -1,13 +1,13 @@
 {
-//   "terminal.integrated.defaultProfile.linux": "zsh",
-//   "terminal.integrated.profiles.linux": {
-//     "zsh": {
-//       "path": "/app/bin/host-spawn",
-//       "args": ["zsh"],
-//       "icon": "terminal-linux",
-//       "overrideName": true
-//     }
-//   },
+  "terminal.integrated.defaultProfile.linux": "zsh",
+  "terminal.integrated.profiles.linux": {
+    "zsh": {
+      "path": "/app/bin/host-spawn",
+      "args": ["zsh"],
+      "icon": "terminal-linux",
+      "overrideName": true
+    }
+  },
   "css.validate": false,
   "less.validate": false,
   "scss.validate": false,
@@ -16,7 +16,6 @@
   "telemetry.editStats.enabled": false,
   "telemetry.feedback.enabled": false,
   "window.menuBarVisibility": "compact",
-  "window.openFoldersInNewWindow": "on",
   "workbench.enableExperiments": false,
   "workbench.list.smoothScrolling": true,
   "workbench.remoteIndicator.showExtensionRecommendations": false,
@@ -187,4 +186,5 @@
   "files.exclude": {
     "**/.git": false
   },
+  "remote.devpodcontainers.devpodCommand": "/app/bin/host-spawn devpod"
 }
