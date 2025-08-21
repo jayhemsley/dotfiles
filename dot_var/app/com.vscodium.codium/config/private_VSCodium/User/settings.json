@@ -186,5 +186,26 @@
   "files.exclude": {
     "**/.git": false
   },
-  "remote.devpodcontainers.devpodCommand": "/app/bin/host-spawn devpod"
+  "remote.devpodcontainers.devpodCommand": "/app/bin/host-spawn devpod",
+  "todo-tree.general.tags": ["@bug", "@hack", "@fix", "@todo", "[ ]", "[x]"],
+  "todo-tree.general.enableFileWatcher": true,
+  "todo-tree.general.statusBar": "tags",
+  "todo-tree.general.showIconsInsteadOfTagsInStatusBar": true,
+  "todo-tree.highlights.backgroundColourScheme": [
+    "red",
+    "orange",
+    "yellow",
+    "blue",
+    "indigo",
+    "violet"
+  ],
+  "todo-tree.highlights.foregroundColourScheme": [
+    "white",
+    "black",
+    "black",
+    "white",
+    "white",
+    "black"
+  ],
+  "php.validate.executablePath": "/home/linuxbrew/.linuxbrew/bin/php"
 }
