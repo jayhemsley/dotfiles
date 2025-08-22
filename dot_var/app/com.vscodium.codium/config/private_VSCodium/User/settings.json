@@ -22,7 +22,7 @@
   "workbench.welcomePage.extraAnnouncements": false,
   "workbench.tips.enabled": false,
   "editor.cursorSmoothCaretAnimation": "on",
-  "editor.fontFamily": "'Monaspace Neon', 'monospace', monospace",
+  "editor.fontFamily": "'Monaspace Neon NF', 'monospace', monospace",
   "editor.fontLigatures": true,
   "editor.fontWeight": "normal",
   "editor.formatOnSave": true,
